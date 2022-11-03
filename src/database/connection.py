@@ -44,15 +44,25 @@ create_connection('postgres', "postgres", "postgres")
 #         print(record[1])
 
 # select_all()
+# def set_main_character():
+#     name = input('Hi SuperHero! What should I call you?: ')
+#     about = input('I like that name! Tell me a little about your self!: ')
+#     bio = input("Oh wow! You are a very interesting person! One last question. How did you get your powers?: ")
+#     params = (name, about, bio)
+#     query = """
+#             INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s)
+#             """
+#     execute_query(query, params)
 
-def set_main_character():
-    name = input('Hi SuperHero! What should I call you?: ')
-    about = input('I like that name! Tell me a little about your self!: ')
-    bio = input("Oh wow! You are a very interesting person! One last question. How did you get your powers?: ")
-    params = (name, about, bio)
+# set_main_character()
+
+def check_for_abilities_table():
     query = """
-            INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s)
+            SELECT h.name, att FROM heroes h
+            JOIN abilities a ON a.hero_id = h.id
+            JOIN ability_types att on a.ability_type_id = att.id
+            
             """
-    execute_query(query, params)
+    execute_query(query)
 
-set_main_character()
+check_for_abilities_table()

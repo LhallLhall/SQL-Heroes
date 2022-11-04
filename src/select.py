@@ -30,11 +30,10 @@ def set_main_character():
             INSERT INTO heroes (name, about_me, biography, is_villain) VALUES (%s, %s, %s, false)
             """
     execute_query(query, params)
-    add_ability_with_id(name, 'heroes')
+    add_ability_with_id(name)
     create_main_villain(name)
-    # change_name(name)
 
-def add_ability_with_id(name, table_name=None):
+def add_ability_with_id(name):
     query = """
             SELECT id from heroes
             WHERE name = %s
@@ -59,11 +58,9 @@ def create_main_villain(hero_name):
             INSERT INTO heroes (name, about_me, biography, is_villain) VALUES (%s, %s, %s, true)
             """
     execute_query(query, params)
-    # add_ability_with_id(name, 'villains')
+    add_ability_with_id(name)
     player_check_hero_abilities()
     delete_character(hero_name, name)
-
-#create_main_villain() #needed
 
 def check_for_abilities_table():
     query = """
@@ -71,7 +68,6 @@ def check_for_abilities_table():
             JOIN abilities a ON a.hero_id = h.id
             JOIN ability_types att on a.ability_type_id = att.id;
             """
-    # pp(execute_query(query).fetchall())
     list_of_heroes_abilities = execute_query(query).fetchall()
     for x in list_of_heroes_abilities:
         pp(x[0] + " : " + x[1])
@@ -83,7 +79,6 @@ def check_for_villain_abilities_table():
             JOIN ability_types att on a.ability_type_id = att.id
             WHERE v.is_villain = true;
             """
-    # pp(execute_query(query).fetchall())
     list_of_villains_abilities = execute_query(query).fetchall()
     for x in list_of_villains_abilities:
         pp(x[0] + " : " + x[1])
@@ -100,25 +95,26 @@ def player_check_hero_abilities():
         print('oops something went wrong')
         player_check_hero_abilities()
 
- #needed
-
-#player_check_hero_abilities() # needed
-
-# def change_name(name):
-#     change_name_ans = input("Before you go out crime fighting would you like to change your name to disguise yourself?: (y/n)")
-#     if change_name_ans == 'y':
-#         name_change = input("What would you like it to be?: ")
-#         query = """
-#                 SELECT name from heroes
-#                 WHERE name = %s
-#                 """
-#         execute_query(query, name_change)
+def villain_conversion_therapy(name):
+    print("The Villain realizes what he is doing is wrong and suddenly has a change of heart. The Villain signs up for 'Villain Conversion Therapy'")
+    query = """
+            SELECT id from heroes
+            WHERE name = %s
+            """
+    results = execute_query(query, (name,)).fetchone()[0]
+    
+    query = """
+            UPDATE heroes
+            SET is_villain = false
+            WHERE id = %s
+            """
+    execute_query(query, (results,))
+    check_for_villain_abilities_table()
 
 
 def delete_character(hero_name, villain_name):
-    input_ans = input("You find yourself against your nemesis " + villain_name + "! Do you want to attack this villain or run away? But be careful you could either endanger yourself or your fellow heroes (Type: attack/run): ")
+    input_ans = input("You find the villain " + villain_name + " trashing the town! Do you want to attack this villain or run away? (Type: attack/run): ")
     if input_ans == 'attack':
-        # blah = input('Are you sure you want to attack? ' + villain_name)
         print("You attack your nemesis and find that your strike is a fatal blow! The villain falls to the ground and your fellow heroes rejoice! You saved the day!")
         import_id_num = """
                         SELECT id from heroes
@@ -131,15 +127,9 @@ def delete_character(hero_name, villain_name):
                 """
         execute_query(query, (villain_id,))
     elif input_ans == 'run':
-        print("You sprint away in fear not knowing of the villains next move! But as you look back you see them grab another hero. As you rush to save the hero they are ultimately killed by the villain")
-        query = """
-                    SELECT id from heroes
-                    WHERE name = %s
-                    DELETE FROM heroes
-                    WHERE id = 28
-                """
-        execute_query(query)
-
-#delete_character() # needed
+        print('You sprint away in waiting for the villain to get tired. But you see something happen to them. It looks like they have had a realization.')
+        villain_conversion_therapy(villain_name)
+        
+        
 
 set_main_character() # needed

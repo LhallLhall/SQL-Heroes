@@ -1,16 +1,25 @@
 from database.connection import execute_query
 from pprint import pprint as pp
 
-def select_all():
+def select_all_heroes():
     query = """
         SELECT * FROM heroes
+        WHERE is_villain = false
     """
 
     list_of_heroes = execute_query(query).fetchall()
     for record in list_of_heroes:
         pp(record[1])
 
-# select_all()
+def select_all_villains():
+    query = """
+        SELECT * FROM heroes
+        WHERE is_villain = true
+    """
+
+    list_of_heroes = execute_query(query).fetchall()
+    for record in list_of_heroes:
+        pp(record[1])
 
 def set_main_character():
     name = input('Hi Superhero! What should I call you?: ')
@@ -18,7 +27,7 @@ def set_main_character():
     bio = input("Oh wow! You are a very interesting person! One last question. How did you get your powers?: ")
     params = (name, about, bio)
     query = """
-            INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s)
+            INSERT INTO heroes (name, about_me, biography, is_villain) VALUES (%s, %s, %s, false)
             """
     execute_query(query, params)
     add_ability_with_id(name, 'heroes')
@@ -26,8 +35,8 @@ def set_main_character():
     # change_name(name)
 
 def add_ability_with_id(name, table_name=None):
-    query_str = "SELECT id from " + table_name;
-    query = query_str + """
+    query = """
+            SELECT id from heroes
             WHERE name = %s
             """
     results = execute_query(query, (name,)).fetchone()[0]
@@ -47,7 +56,7 @@ def create_main_villain(hero_name):
     bio = input("One last question. How did you get your powers?: ")
     params = (name, about, bio)
     query = """
-            INSERT INTO villains (name, about_me, biography) VALUES (%s, %s, %s)
+            INSERT INTO heroes (name, about_me, biography, is_villain) VALUES (%s, %s, %s, true)
             """
     execute_query(query, params)
     # add_ability_with_id(name, 'villains')
@@ -69,9 +78,10 @@ def check_for_abilities_table():
 
 def check_for_villain_abilities_table():
     query = """
-            SELECT v.name, att.name FROM villains v 
+            SELECT v.name, att.name FROM heroes v 
             JOIN abilities a ON a.hero_id = v.id
-            JOIN ability_types att on a.ability_type_id = att.id;
+            JOIN ability_types att on a.ability_type_id = att.id
+            WHERE v.is_villain = true;
             """
     # pp(execute_query(query).fetchall())
     list_of_villains_abilities = execute_query(query).fetchall()
@@ -111,12 +121,12 @@ def delete_character(hero_name, villain_name):
         # blah = input('Are you sure you want to attack? ' + villain_name)
         print("You attack your nemesis and find that your strike is a fatal blow! The villain falls to the ground and your fellow heroes rejoice! You saved the day!")
         import_id_num = """
-                        SELECT id from villains
-                        WHERE name = %s
+                        SELECT id from heroes
+                        WHERE name = %s AND is_villain = true
                         """
         villain_id = execute_query(import_id_num, (villain_name,) ).fetchone()[0]
         query = """
-                DELETE from villains
+                DELETE from heroes
                 WHERE id = %s
                 """
         execute_query(query, (villain_id,))

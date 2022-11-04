@@ -37,7 +37,7 @@
     - maybe have a story line that ends up making other characters hate each other or like each other
     - could have delete lead into update????
 
-
+thoughts are to 
 
 
 # QUERIES MAYBE?????

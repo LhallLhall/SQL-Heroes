@@ -1,25 +1,25 @@
 from database.connection import execute_query
 from pprint import pprint as pp
 
-def select_all_heroes():
-    query = """
-        SELECT * FROM heroes
-        WHERE is_villain = false
-    """
+# def select_all_heroes():
+#     query = """
+#         SELECT * FROM heroes
+#         WHERE is_villain = false
+#     """
 
-    list_of_heroes = execute_query(query).fetchall()
-    for record in list_of_heroes:
-        pp(record[1])
+#     list_of_heroes = execute_query(query).fetchall()
+#     for record in list_of_heroes:
+#         pp(record[1])
 
-def select_all_villains():
-    query = """
-        SELECT * FROM heroes
-        WHERE is_villain = true
-    """
+# def select_all_villains():
+#     query = """
+#         SELECT * FROM heroes
+#         WHERE is_villain = true
+#     """
 
-    list_of_heroes = execute_query(query).fetchall()
-    for record in list_of_heroes:
-        pp(record[1])
+#     list_of_heroes = execute_query(query).fetchall()
+#     for record in list_of_heroes:
+#         pp(record[1])
 
 def set_main_character():
     name = input('Hi Superhero! What should I call you?: ')
@@ -83,14 +83,25 @@ def check_for_villain_abilities_table():
     for x in list_of_villains_abilities:
         pp(x[0] + " : " + x[1])
 
+def show_relationships():
+    query = """
+            Select h1.name, rt.name, h2.name FROM relationships r
+            JOIN heroes h1 ON r.hero1_id = h1.id
+            JOIN heroes h2 ON r.hero2_id = h2.id
+            JOIN relationship_types rt ON r.relationship_type_id = rt.id
+            """
+    relationships_ans = execute_query(query,).fetchall()
+    pp(relationships_ans)
 
 def player_check_hero_abilities():
-    show_heroes_ans = input('Now that we have you registered as an official Superhero would you like to check out (1: Heroes and their abilities OR 2: List of Villains and their abilities) (type: 1 or 2) ')
+    show_heroes_ans = input('Now that we have you registered would you like to check out (1: Heroes and their abilities OR 2: List of Villains and their abilities 3: Show relationship status with all Heroes) (Type: 1-3) ')
 
     if show_heroes_ans == "1":
         check_for_abilities_table()
     elif show_heroes_ans == "2":
         check_for_villain_abilities_table()
+    elif show_heroes_ans == '3':
+        show_relationships()
     else:
         print('oops something went wrong')
         player_check_hero_abilities()
@@ -109,8 +120,7 @@ def villain_conversion_therapy(name):
             WHERE id = %s
             """
     execute_query(query, (results,))
-    check_for_villain_abilities_table()
-
+    player_check_hero_abilities()
 
 def delete_character(hero_name, villain_name):
     input_ans = input("You find the villain " + villain_name + " trashing the town! Do you want to attack this villain or run away? (Type: attack/run): ")
@@ -132,4 +142,5 @@ def delete_character(hero_name, villain_name):
         
         
 
-set_main_character() # needed
+#set_main_character() # needed
+show_relationships()

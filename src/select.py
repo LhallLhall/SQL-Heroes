@@ -21,20 +21,18 @@ def set_main_character():
             INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s)
             """
     execute_query(query, params)
-    add_ability_with_id(name)
+    add_ability_with_id(name, 'heroes')
     create_main_villain(name)
-    player_check_hero_abilities()
     # change_name(name)
 
-def add_ability_with_id(name):
-    params = name
-    query = """
-            SELECT id from heroes
+def add_ability_with_id(name, table_name=None):
+    query_str = "SELECT id from " + table_name;
+    query = query_str + """
             WHERE name = %s
             """
-    results = execute_query(query, (params,)).fetchone()[0]
-    print(results)
+    results = execute_query(query, (name,)).fetchone()[0]
 
+    print(results)
     type_id = input('What is your super power? 1: Super Strength 2: Flying 3: Telekinesis 4: Telepathy: 5: Frost Breath 6: Super Speed 7: Super Vision. Type(1-7): ')
     ability_params = (results, int(type_id))
     adding_ability = """
@@ -44,7 +42,7 @@ def add_ability_with_id(name):
     print(updated_table)
 
 def create_main_villain(hero_name):
-    name = input('Ah welcome to the order of the villains! What is your villain name?: ')
+    name = input('* Now at the lair of the "Order of the Villains" * Ah welcome to the order of the villains! What is your villain name?: ')
     about = input('Welcome ' + name + '. Now tell me how you became a villain: ')
     bio = input("One last question. How did you get your powers?: ")
     params = (name, about, bio)
@@ -52,7 +50,8 @@ def create_main_villain(hero_name):
             INSERT INTO villains (name, about_me, biography) VALUES (%s, %s, %s)
             """
     execute_query(query, params)
-    # add_ability_with_id(name)
+    # add_ability_with_id(name, 'villains')
+    player_check_hero_abilities()
     delete_character(hero_name, name)
 
 #create_main_villain() #needed
@@ -91,7 +90,7 @@ def player_check_hero_abilities():
         print('oops something went wrong')
         player_check_hero_abilities()
 
-set_main_character() #needed
+ #needed
 
 #player_check_hero_abilities() # needed
 
@@ -107,7 +106,7 @@ set_main_character() #needed
 
 
 def delete_character(hero_name, villain_name):
-    input_ans = input("You find yourself against your nemesis (blank for now)! Do you want to attack this villain or run away? But be careful you could either endanger yourself or your fellow heroes (Type: attack/run): ")
+    input_ans = input("You find yourself against your nemesis " + villain_name + "! Do you want to attack this villain or run away? But be careful you could either endanger yourself or your fellow heroes (Type: attack/run): ")
     if input_ans == 'attack':
         # blah = input('Are you sure you want to attack? ' + villain_name)
         print("You attack your nemesis and find that your strike is a fatal blow! The villain falls to the ground and your fellow heroes rejoice! You saved the day!")
@@ -115,12 +114,12 @@ def delete_character(hero_name, villain_name):
                         SELECT id from villains
                         WHERE name = %s
                         """
-        villain_id = execute_query(import_id_num, (villain_name,) )
+        villain_id = execute_query(import_id_num, (villain_name,) ).fetchone()[0]
         query = """
-                    DELETE FROM villains
-                    WHERE id = %s
+                DELETE from villains
+                WHERE id = %s
                 """
-        execute_query(query,)
+        execute_query(query, (villain_id,))
     elif input_ans == 'run':
         print("You sprint away in fear not knowing of the villains next move! But as you look back you see them grab another hero. As you rush to save the hero they are ultimately killed by the villain")
         query = """
@@ -132,3 +131,5 @@ def delete_character(hero_name, villain_name):
         execute_query(query)
 
 #delete_character() # needed
+
+set_main_character() # needed

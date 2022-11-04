@@ -1,26 +1,6 @@
 from database.connection import execute_query
 from pprint import pprint as pp
 
-# def select_all_heroes():
-#     query = """
-#         SELECT * FROM heroes
-#         WHERE is_villain = false
-#     """
-
-#     list_of_heroes = execute_query(query).fetchall()
-#     for record in list_of_heroes:
-#         pp(record[1])
-
-# def select_all_villains():
-#     query = """
-#         SELECT * FROM heroes
-#         WHERE is_villain = true
-#     """
-
-#     list_of_heroes = execute_query(query).fetchall()
-#     for record in list_of_heroes:
-#         pp(record[1])
-
 def set_main_character():
     name = input('Hi Superhero! What should I call you?: ')
     about = input('Hey ' + name + '! I like that name! Tell me a little about your self!: ')
@@ -142,5 +122,4 @@ def delete_character(hero_name, villain_name):
         
         
 
-#set_main_character() # needed
-show_relationships()
+set_main_character() # needed
